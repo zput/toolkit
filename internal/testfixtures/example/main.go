@@ -1,11 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/zput/toolkit/internal/testfixtures"
 	"io/ioutil"
 	"os"
-	"xorm.io/xorm"
 )
 
 type Example struct {
@@ -56,29 +56,33 @@ func main() {
 
 }
 
-func example1(path string, tablePrefix, driveName, dataSourceName string) (engine *xorm.Engine, err error) {
+func example1(path string, tablePrefix, driveName, dataSourceName string) (engine *sql.DB, err error) {
 
-	testfixtures.NewXOrm()
+	xorm, _ := testfixtures.NewXOrm(
+		testfixtures.Dialect(driveName),
+		testfixtures.DataSourceName(dataSourceName),
+		testfixtures.TablePrefix(tablePrefix),
+	)
 
 	var f testfixtures.IFixture
-	f, err = testfixtures.NewFixture(testfixtures.Orm(), testfixtures.MockDataPath(path),
-		testfixtures.SetFixtureTablePrefix(tablePrefix),
-		testfixtures.SetFixtureNameAboutDrivePlusDataSource(driveName, dataSourceName),
+	f, err = testfixtures.NewFixture(
+		testfixtures.Orm(xorm),
+		testfixtures.MockDataPath(path),
 	)
 	if err != nil {
 		return
 	}
 
-	if err = f.Sync(
+	if err = f.MigrationTableSchema(
 		new(Example),
 	); err != nil {
 		return
 	}
 
-	if err = f.Load(); err != nil {
+	if err = f.LoadMockData(); err != nil {
 		return
 	}
 
-	engine = f.Engine()
+	engine = f.RetDb()
 	return
 }
