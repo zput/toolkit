@@ -57,8 +57,11 @@ func main() {
 }
 
 func example1(path string, tablePrefix, driveName, dataSourceName string) (engine *xorm.Engine, err error) {
-	var f testfixtures.IFixtureServe
-	f, err = testfixtures.New(testfixtures.SetFixturePath(path),
+
+	testfixtures.NewXOrm()
+
+	var f testfixtures.IFixture
+	f, err = testfixtures.NewFixture(testfixtures.Orm(), testfixtures.MockDataPath(path),
 		testfixtures.SetFixtureTablePrefix(tablePrefix),
 		testfixtures.SetFixtureNameAboutDrivePlusDataSource(driveName, dataSourceName),
 	)
