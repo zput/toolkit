@@ -7,37 +7,6 @@ import (
 	"xorm.io/xorm"
 )
 
-//const dbFilePath = "../../test.db"
-
-func DumpData(dbFilePath, targetDir string) (err error) {
-	engine, err := NewEngine(dbFilePath)
-	if err != nil {
-		return
-	}
-
-	dumper, err := testfixtures.NewDumper(
-		testfixtures.DumpDatabase(engine.DB().DB),
-		testfixtures.DumpDialect("sqlite"),
-		testfixtures.DumpDirectory(targetDir),
-	)
-	if err != nil {
-		return
-	}
-	if err = dumper.Dump(); err != nil {
-		return
-	}
-	return
-}
-
-func NewEngine(sqliteFilePath string) (engine *xorm.Engine, err error) {
-	engine, err = xorm.NewEngine("sqlite", sqliteFilePath+"?cache=shared&mode=memory")
-	if err != nil {
-		return nil, err
-	}
-	engine.ShowSQL(true)
-	return
-}
-
 // GenFixtureByExistDB
 // tables is optional, will dump all table if not given
 func GenFixtureByExistDB(db *sql.DB, dialect, targetPath string, tables ...string) error {
@@ -57,4 +26,13 @@ func GenFixtureByExistDB(db *sql.DB, dialect, targetPath string, tables ...strin
 	}
 	fmt.Println("success generate fixtures from exist database")
 	return nil
+}
+
+func NewEngine(sqliteFilePath string) (engine *xorm.Engine, err error) {
+	engine, err = xorm.NewEngine("sqlite", sqliteFilePath+"?cache=shared&mode=memory")
+	if err != nil {
+		return nil, err
+	}
+	engine.ShowSQL(true)
+	return
 }

@@ -27,7 +27,7 @@ func TestGenFixtureByExistDB(t *testing.T) {
 			args: args{
 				db:         sqlDb,
 				dialect:    "sqlite",
-				targetPath: "./archive",
+				targetPath: "./testdata",
 				tables:     nil,
 			},
 		},
