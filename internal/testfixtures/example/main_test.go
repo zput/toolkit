@@ -29,7 +29,7 @@ func TestExample(t *testing.T) {
 		panic(err)
 	} else {
 		var name string
-		if _, err := engine.SQL("select name from table_example").Get(&name); err != nil {
+		if _, err := engine.Xorm().SQL("select name from table_example").Get(&name); err != nil {
 			panic(err)
 		}
 		if name != "ztTest" {

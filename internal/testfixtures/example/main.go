@@ -13,15 +13,49 @@ type Example struct {
 }
 
 func main() {
+	// testXorm()
+	fmt.Println("=== ===")
+	testGorm()
+}
+
+func testXorm() {
+	var tablePrefix = "table_"
+
+	xorm, errXorm := genXorm(tablePrefix, "", "")
+	if errXorm != nil {
+		panic(errXorm)
+	}
+	db, err := SetUpFixture(GetMockPath(), xorm)
+	if err != nil {
+		panic(err)
+	}
+
+	verifyByXorm(db)
+}
+
+func testGorm() {
+	var tablePrefix = "table_"
+
+	xorm, errXorm := genGorm(tablePrefix, "sqlite", "gorm.db")
+	if errXorm != nil {
+		panic(errXorm)
+	}
+	db, err := SetUpFixture(GetMockPath(), xorm)
+	if err != nil {
+		panic(err)
+	}
+
+	verifyByGorm(db)
+}
+
+func GetMockPath() string {
 	var (
 		path = "/internal/testfixtures/example/get_example_by_id"
-		//path        = "/Users/edz/CODE/Self/zxcTool/ztTest/example/get_example_by_id"
-		tablePrefix = "table_"
 	)
 
 	dir, _ := os.Getwd()
 	fmt.Println("当前路径：", dir)
-
+	// TODO to make a blog
 	//ex, err := os.Executable()
 	//if err != nil {
 	//	panic(err)
@@ -30,45 +64,69 @@ func main() {
 	//fmt.Println(exPath)
 
 	path = dir + path
-
 	fmt.Println("当前路径：", path)
 
 	_, err := ioutil.ReadDir(path)
 	if err != nil {
 		panic(err)
 	}
-
-	if engine, err := example1(path, tablePrefix, "", ""); err != nil {
-		panic(err)
-	} else {
-		var name string
-		if _, err := engine.Xorm().SQL(`select name from table_example`).Get(&name); err != nil {
-			panic(err)
-		}
-		fmt.Println(name)
-		if name != "ztTest" {
-			panic(fmt.Sprintf("expect ztTest, but get %s", name))
-		} else {
-			fmt.Println("(- v -), pass")
-		}
-	}
-
+	return path
 }
 
-func example1(path string, tablePrefix, driveName, dataSourceName string) (db testfixtures.DB, err error) {
+func verifyByGorm(db testfixtures.DB) {
+	var name string
+	db.Gorm().Raw(`select name from table_example`).Scan(&name)
 
-	xorm, err := testfixtures.NewXOrm(
-		testfixtures.Dialect(driveName),
-		testfixtures.DataSourceName(dataSourceName),
-		testfixtures.TablePrefix(tablePrefix),
-	)
-	if err != nil {
+	fmt.Println(name)
+
+	if name != "ztTest" {
+		panic(fmt.Sprintf("expect ztTest, but get %s", name))
+	} else {
+		fmt.Println("(- v -), pass")
+	}
+}
+
+func verifyByXorm(db testfixtures.DB) {
+	var name string
+	if _, err := db.Xorm().SQL(`select name from table_example`).Get(&name); err != nil {
 		panic(err)
 	}
+	fmt.Println(name)
+	if name != "ztTest" {
+		panic(fmt.Sprintf("expect ztTest, but get %s", name))
+	} else {
+		fmt.Println("(- v -), pass")
+	}
+}
 
+func genXorm(tablePrefix, driveName, dataSourceName string) (db testfixtures.IOrm, err error) {
+	xorm, err := testfixtures.NewXOrm(
+		testfixtures.DialectByXorm(driveName),
+		testfixtures.DataSourceNameByXorm(dataSourceName),
+		testfixtures.TablePrefixByXorm(tablePrefix),
+	)
+	if err != nil {
+		return
+	}
+	return xorm, nil
+}
+
+func genGorm(tablePrefix, driveName, dataSourceName string) (db testfixtures.IOrm, err error) {
+	gorm, err := testfixtures.NewGOrm(
+		testfixtures.DialectByGOrm(driveName),
+		testfixtures.DataSourceNameByGOrm(dataSourceName),
+		testfixtures.TablePrefixByGOrm(tablePrefix),
+	)
+	if err != nil {
+		return
+	}
+	return gorm, nil
+}
+
+func SetUpFixture(path string, orm testfixtures.IOrm) (db testfixtures.DB, err error) {
 	var f testfixtures.IFixture
 	f, err = testfixtures.NewFixture(
-		testfixtures.Orm(xorm),
+		testfixtures.Orm(orm),
 		testfixtures.MockDataPath(path),
 	)
 	if err != nil {

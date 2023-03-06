@@ -3,6 +3,7 @@ package testfixtures
 import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 func NewGOrm(o ...GOrmOption) (x *GOrm, err error) {
@@ -16,9 +17,17 @@ func NewGOrm(o ...GOrmOption) (x *GOrm, err error) {
 		x.dialect = "sqlite3"
 		x.dataSourceName = "file::memory:?cache=shared"
 	}
+	gormConfig := new(gorm.Config)
+
+	if len(x.tablePrefix) > 0 {
+		gormConfig.NamingStrategy = schema.NamingStrategy{
+			TablePrefix:   x.tablePrefix,
+			SingularTable: true,
+		}
+	}
 
 	// gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	x.db, err = gorm.Open(sqlite.Open(x.dataSourceName), &gorm.Config{})
+	x.db, err = gorm.Open(sqlite.Open(x.dataSourceName), gormConfig)
 	if err != nil {
 		return
 	}
@@ -34,7 +43,7 @@ type GOrm struct {
 
 func (x *GOrm) MigrationTableSchema(tables ...interface{}) (err error) {
 	for _, v := range tables {
-		err = x.db.Migrator().CreateTable(v)
+		err = x.db.Migrator().AutoMigrate(v)
 		if err != nil {
 			return
 		}
