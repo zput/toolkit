@@ -1,25 +1,22 @@
 package testfixtures
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/go-testfixtures/testfixtures/v3"
 	"io/ioutil"
 )
 
-func xx() {
-}
-
 type IOrm interface {
+	Name() OrmType
 	MigrationTableSchema(tables ...interface{}) error
-	RetDb() *sql.DB
+	RetDb() DB
 	Dialect() string // // Possible options are "postgresql", "timescaledb", "mysql", "mariadb", "sqlite" and "sqlserver".
 }
 
 type IFixture interface {
 	MigrationTableSchema(tables ...interface{}) error // 表初始化到数据库
 	LoadMockData() error
-	RetDb() *sql.DB
+	RetDb() DB
 }
 
 /*
@@ -44,7 +41,7 @@ func NewFixture(o ...Option) (f *Fixture, err error) {
 
 	var para = []func(*testfixtures.Loader) error{
 		testfixtures.DangerousSkipTestDatabaseCheck(),
-		testfixtures.Database(db),
+		testfixtures.Database(db.StandDB()),
 		testfixtures.Dialect(dialect),
 	}
 	if len(path) > 0 {
@@ -77,7 +74,7 @@ func (f *Fixture) LoadMockData() error {
 	return nil
 }
 
-func (f *Fixture) RetDb() *sql.DB {
+func (f *Fixture) RetDb() DB {
 	return f.orm.RetDb()
 }
 

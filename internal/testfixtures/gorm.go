@@ -1,8 +1,7 @@
 package testfixtures
 
 import (
-	"database/sql"
-	"github.com/glebarez/sqlite"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -43,8 +42,14 @@ func (x *GOrm) MigrationTableSchema(tables ...interface{}) (err error) {
 	return
 }
 
-func (x *GOrm) RetDb() (db *sql.DB, err error) {
-	return x.db.Debug().DB()
+func (x *GOrm) RetDb() DB {
+	return DB{
+		gOrmDB: x.db,
+		__type: GORM,
+	}
+}
+func (x *GOrm) Name() OrmType {
+	return GORM
 }
 
 func (x *GOrm) Dialect() string {
