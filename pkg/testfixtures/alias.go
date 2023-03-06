@@ -2,6 +2,7 @@ package testfixtures
 
 import (
 	"github.com/zput/toolkit/internal/testfixtures"
+	"github.com/zput/toolkit/internal/testfixtures/tool"
 )
 
 type (
@@ -24,6 +25,10 @@ var (
 type (
 	IFixture = testfixtures.IFixture
 	IOrm     = testfixtures.IOrm
+)
+
+var (
+	GenFixtureByExistDB = tool.GenFixtureByExistDB
 )
 
 func Example() {

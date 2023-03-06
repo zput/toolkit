@@ -1,8 +1,9 @@
 package tool
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/go-testfixtures/testfixtures/v3"
-	_ "github.com/logoove/sqlite"
 	"xorm.io/xorm"
 )
 
@@ -16,13 +17,13 @@ func DumpData(dbFilePath, targetDir string) (err error) {
 
 	dumper, err := testfixtures.NewDumper(
 		testfixtures.DumpDatabase(engine.DB().DB),
-		testfixtures.DumpDialect("sqlite"),    // or your database of choice.
-		testfixtures.DumpDirectory(targetDir), // api name that wait to test.
+		testfixtures.DumpDialect("sqlite"),
+		testfixtures.DumpDirectory(targetDir),
 	)
 	if err != nil {
 		return
 	}
-	if err := dumper.Dump(); err != nil {
+	if err = dumper.Dump(); err != nil {
 		return
 	}
 	return
@@ -35,4 +36,25 @@ func NewEngine(sqliteFilePath string) (engine *xorm.Engine, err error) {
 	}
 	engine.ShowSQL(true)
 	return
+}
+
+// GenFixtureByExistDB
+// tables is optional, will dump all table if not given
+func GenFixtureByExistDB(db *sql.DB, dialect, targetPath string, tables ...string) error {
+	dumper, err := testfixtures.NewDumper(
+		testfixtures.DumpDatabase(db),
+		testfixtures.DumpDialect(dialect), // or your database of choice
+		testfixtures.DumpDirectory(targetPath),
+		testfixtures.DumpTables( // optional, will dump all table if not given
+			tables...,
+		),
+	)
+	if err != nil {
+		return err
+	}
+	if err = dumper.Dump(); err != nil {
+		return err
+	}
+	fmt.Println("success generate fixtures from exist database")
+	return nil
 }
