@@ -80,15 +80,15 @@ func (f *Fixture) RetDb() DB {
 
 type Option func(o *Fixture) error
 
-func Orm(orm IOrm) Option {
+func FixtureOptionOrm(orm IOrm) Option {
 	return func(o *Fixture) (err error) {
 		o.orm = orm
 		return
 	}
 }
 
-// MockDataPath set path in order to load YAML files from a given directory.
-func MockDataPath(path string) Option {
+// FixtureOptionMockDataPath set path in order to load YAML files from a given directory.
+func FixtureOptionMockDataPath(path string) Option {
 	return func(o *Fixture) (err error) {
 		_, err = ioutil.ReadDir(path)
 		if err != nil {
