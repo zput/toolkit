@@ -113,9 +113,9 @@ func genXorm(tablePrefix, driveName, dataSourceName string) (db testfixtures.IOr
 
 func genGorm(tablePrefix, driveName, dataSourceName string) (db testfixtures.IOrm, err error) {
 	gorm, err := testfixtures.NewGOrm(
-		testfixtures.DialectByGOrm(driveName),
-		testfixtures.DataSourceNameByGOrm(dataSourceName),
-		testfixtures.TablePrefixByGOrm(tablePrefix),
+		testfixtures.GOrmOptionDialect(driveName),
+		testfixtures.GOrmOptionDataSourceName(dataSourceName),
+		testfixtures.GOrmOptionTablePrefix(tablePrefix),
 	)
 	if err != nil {
 		return
@@ -126,8 +126,8 @@ func genGorm(tablePrefix, driveName, dataSourceName string) (db testfixtures.IOr
 func SetUpFixture(path string, orm testfixtures.IOrm) (db testfixtures.DB, err error) {
 	var f testfixtures.IFixture
 	f, err = testfixtures.NewFixture(
-		testfixtures.Orm(orm),
-		testfixtures.MockDataPath(path),
+		testfixtures.FixtureOptionOrm(orm),
+		testfixtures.FixtureOptionMockDataPath(path),
 	)
 	if err != nil {
 		return

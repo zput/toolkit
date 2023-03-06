@@ -67,20 +67,20 @@ func (x *GOrm) Dialect() string {
 
 type GOrmOption func(x *GOrm) error
 
-func DialectByGOrm(dialect string) GOrmOption {
+func GOrmOptionDialect(dialect string) GOrmOption {
 	return func(x *GOrm) (err error) {
 		x.dialect = dialect
 		return
 	}
 }
-func DataSourceNameByGOrm(dataSourceName string) GOrmOption {
+func GOrmOptionDataSourceName(dataSourceName string) GOrmOption {
 	return func(x *GOrm) (err error) {
 		x.dataSourceName = dataSourceName
 		return
 	}
 }
 
-func TablePrefixByGOrm(tablePrefix string) GOrmOption {
+func GOrmOptionTablePrefix(tablePrefix string) GOrmOption {
 	return func(x *GOrm) (err error) {
 		x.tablePrefix = tablePrefix
 		return
