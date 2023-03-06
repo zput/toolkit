@@ -1,7 +1,6 @@
 package testfixtures
 
 import (
-	"database/sql"
 	"xorm.io/xorm"
 	xlog "xorm.io/xorm/log"
 	"xorm.io/xorm/names"
@@ -19,16 +18,15 @@ func NewXOrm(o ...XOrmOption) (x *XOrm, err error) {
 		x.dataSourceName = "file::memory:?cache=shared"
 	}
 
-	var engine *xorm.Engine
-	engine, err = xorm.NewEngine(x.dialect, x.dataSourceName)
+	x.engine, err = xorm.NewEngine(x.dialect, x.dataSourceName)
 	if err != nil {
 		return
 	}
 	if len(x.tablePrefix) > 0 {
-		engine.SetTableMapper(names.NewPrefixMapper(names.SnakeMapper{}, x.tablePrefix))
+		x.engine.SetTableMapper(names.NewPrefixMapper(names.SnakeMapper{}, x.tablePrefix))
 	}
-	engine.ShowSQL(true)
-	engine.SetLogLevel(xlog.LOG_DEBUG)
+	x.engine.ShowSQL(true)
+	x.engine.SetLogLevel(xlog.LOG_DEBUG)
 
 	return
 }
@@ -37,6 +35,10 @@ type XOrm struct {
 	dialect, dataSourceName string
 	tablePrefix             string
 	engine                  *xorm.Engine
+}
+
+func (x *XOrm) Name() OrmType {
+	return XORM
 }
 
 func (x *XOrm) MigrationTableSchema(tables ...interface{}) (err error) {
@@ -49,8 +51,11 @@ func (x *XOrm) MigrationTableSchema(tables ...interface{}) (err error) {
 	return
 }
 
-func (x *XOrm) RetDb() *sql.DB {
-	return x.engine.DB().DB
+func (x *XOrm) RetDb() DB {
+	return DB{
+		xOrmDB: x.engine,
+		__type: XORM,
+	}
 }
 
 func (x *XOrm) Dialect() string {

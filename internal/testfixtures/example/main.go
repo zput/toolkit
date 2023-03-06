@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/zput/toolkit/internal/testfixtures"
 	"io/ioutil"
@@ -43,7 +42,7 @@ func main() {
 		panic(err)
 	} else {
 		var name string
-		if _, err := engine.SQL(`select name from table_example`).Get(&name); err != nil {
+		if _, err := engine.Xorm().SQL(`select name from table_example`).Get(&name); err != nil {
 			panic(err)
 		}
 		fmt.Println(name)
@@ -56,13 +55,16 @@ func main() {
 
 }
 
-func example1(path string, tablePrefix, driveName, dataSourceName string) (engine *sql.DB, err error) {
+func example1(path string, tablePrefix, driveName, dataSourceName string) (db testfixtures.DB, err error) {
 
-	xorm, _ := testfixtures.NewXOrm(
+	xorm, err := testfixtures.NewXOrm(
 		testfixtures.Dialect(driveName),
 		testfixtures.DataSourceName(dataSourceName),
 		testfixtures.TablePrefix(tablePrefix),
 	)
+	if err != nil {
+		panic(err)
+	}
 
 	var f testfixtures.IFixture
 	f, err = testfixtures.NewFixture(
@@ -83,6 +85,6 @@ func example1(path string, tablePrefix, driveName, dataSourceName string) (engin
 		return
 	}
 
-	engine = f.RetDb()
+	db = f.RetDb()
 	return
 }
