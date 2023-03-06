@@ -64,20 +64,20 @@ func (x *XOrm) Dialect() string {
 
 type XOrmOption func(x *XOrm) error
 
-func Dialect(dialect string) XOrmOption {
+func DialectByXorm(dialect string) XOrmOption {
 	return func(x *XOrm) (err error) {
 		x.dialect = dialect
 		return
 	}
 }
-func DataSourceName(dataSourceName string) XOrmOption {
+func DataSourceNameByXorm(dataSourceName string) XOrmOption {
 	return func(x *XOrm) (err error) {
 		x.dataSourceName = dataSourceName
 		return
 	}
 }
 
-func TablePrefix(tablePrefix string) XOrmOption {
+func TablePrefixByXorm(tablePrefix string) XOrmOption {
 	return func(x *XOrm) (err error) {
 		x.tablePrefix = tablePrefix
 		return

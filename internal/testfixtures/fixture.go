@@ -69,7 +69,7 @@ func (f *Fixture) MigrationTableSchema(tables ...interface{}) error {
 
 func (f *Fixture) LoadMockData() error {
 	if err := f.f.Load(); err != nil {
-		return fmt.Errorf("cannot load jiuWMySql fixtures, err: %+v", err)
+		return fmt.Errorf("[testfixtures] cannot load fixtures, err: %+v", err)
 	}
 	return nil
 }
