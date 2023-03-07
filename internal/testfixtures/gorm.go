@@ -18,12 +18,9 @@ func NewGOrm(o ...GOrmOption) (x *GOrm, err error) {
 		x.dataSourceName = "file::memory:?cache=shared"
 	}
 	gormConfig := new(gorm.Config)
-
-	if len(x.tablePrefix) > 0 {
-		gormConfig.NamingStrategy = schema.NamingStrategy{
-			TablePrefix:   x.tablePrefix,
-			SingularTable: true,
-		}
+	gormConfig.NamingStrategy = schema.NamingStrategy{
+		TablePrefix:   x.tablePrefix,
+		SingularTable: true,
 	}
 
 	// gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
