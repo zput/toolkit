@@ -25,7 +25,7 @@ func testXorm() {
 	if errXorm != nil {
 		panic(errXorm)
 	}
-	db, err := SetUpFixture(GetMockPath(), xorm)
+	db, err := SetUpFixture(GetMockPath(), xorm, new(Example))
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ func testGorm() {
 	if errXorm != nil {
 		panic(errXorm)
 	}
-	db, err := SetUpFixture(GetMockPath(), xorm)
+	db, err := SetUpFixture(GetMockPath(), xorm, new(Example))
 	if err != nil {
 		panic(err)
 	}
@@ -123,18 +123,18 @@ func genGorm(tablePrefix, driveName, dataSourceName string) (db testfixtures.IOr
 	return gorm, nil
 }
 
-func SetUpFixture(path string, orm testfixtures.IOrm) (db testfixtures.DB, err error) {
+func SetUpFixture(mockDataPath string, orm testfixtures.IOrm, tables ...interface{}) (db testfixtures.DB, err error) {
 	var f testfixtures.IFixture
 	f, err = testfixtures.NewFixture(
 		testfixtures.FixtureOptionOrm(orm),
-		testfixtures.FixtureOptionMockDataPath(path),
+		testfixtures.FixtureOptionMockDataPath(mockDataPath),
 	)
 	if err != nil {
 		return
 	}
 
 	if err = f.MigrationTableSchema(
-		new(Example),
+		tables...,
 	); err != nil {
 		return
 	}
