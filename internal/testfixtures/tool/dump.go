@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-testfixtures/testfixtures/v3"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"xorm.io/xorm"
 )
 
@@ -34,5 +36,15 @@ func NewEngine(sqliteFilePath string) (engine *xorm.Engine, err error) {
 		return nil, err
 	}
 	engine.ShowSQL(true)
+	return
+}
+
+func NewSqlDBByGorm() (db *sql.DB, err error) {
+	var g *gorm.DB
+	g, err = gorm.Open(sqlite.Open("gorm.db"))
+	if err != nil {
+		return
+	}
+	db, err = g.DB()
 	return
 }

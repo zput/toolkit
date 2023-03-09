@@ -28,7 +28,10 @@ type (
 )
 
 var (
+	// dump yml 数据
+
 	GenFixtureByExistDB = tool.GenFixtureByExistDB
+	NewSqlDBByGorm      = tool.NewSqlDBByGorm
 )
 
 func Example() {
