@@ -39,9 +39,9 @@ func NewEngine(sqliteFilePath string) (engine *xorm.Engine, err error) {
 	return
 }
 
-func NewSqlDBByGorm() (db *sql.DB, err error) {
+func NewSqlDBByGorm(path string) (db *sql.DB, err error) {
 	var g *gorm.DB
-	g, err = gorm.Open(sqlite.Open("gorm.db"))
+	g, err = gorm.Open(sqlite.Open(path))
 	if err != nil {
 		return
 	}
