@@ -3,8 +3,8 @@ package tool
 import (
 	"database/sql"
 	"fmt"
+	"github.com/glebarez/sqlite"
 	"github.com/go-testfixtures/testfixtures/v3"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"xorm.io/xorm"
 )

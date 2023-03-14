@@ -2,7 +2,7 @@ package tool
 
 import (
 	"database/sql"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"testing"
 )
