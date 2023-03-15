@@ -40,6 +40,7 @@ type GOrm struct {
 
 func (x *GOrm) MigrationTableSchema(tables ...interface{}) (err error) {
 	for _, v := range tables {
+		err = x.db.Migrator().DropTable(v)
 		err = x.db.AutoMigrate(v)
 		if err != nil {
 			return

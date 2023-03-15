@@ -40,10 +40,13 @@ func NewFixture(o ...Option) (f *Fixture, err error) {
 	)
 
 	var para = []func(*testfixtures.Loader) error{
-		testfixtures.DangerousSkipTestDatabaseCheck(),
 		testfixtures.Database(db.StandDB()),
 		testfixtures.Dialect(dialect),
 	}
+	if f.skipTestDatabaseCheck {
+		para = append(para, testfixtures.DangerousSkipTestDatabaseCheck())
+	}
+
 	if len(path) > 0 {
 		para = append(para, testfixtures.Directory(path))
 	}
@@ -58,9 +61,10 @@ func NewFixture(o ...Option) (f *Fixture, err error) {
 
 // Fixture 脚手架 夹具
 type Fixture struct {
-	orm          IOrm
-	mockDataPath string // path in order to load YAML files from a given directory
-	f            *testfixtures.Loader
+	orm                   IOrm
+	mockDataPath          string // path in order to load YAML files from a given directory
+	f                     *testfixtures.Loader
+	skipTestDatabaseCheck bool
 }
 
 func (f *Fixture) MigrationTableSchema(tables ...interface{}) error {
@@ -83,6 +87,13 @@ type Option func(o *Fixture) error
 func FixtureOptionOrm(orm IOrm) Option {
 	return func(o *Fixture) (err error) {
 		o.orm = orm
+		return
+	}
+}
+
+func FixtureOptionSkipTestDBCheck(skipTestDatabaseCheck bool) Option {
+	return func(o *Fixture) (err error) {
+		o.skipTestDatabaseCheck = skipTestDatabaseCheck
 		return
 	}
 }
