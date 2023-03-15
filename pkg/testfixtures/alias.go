@@ -37,7 +37,7 @@ var (
 func Example() {
 	var tablePrefix = "table_"
 
-	gorm, errXorm := GenGorm(tablePrefix, "sqlite", "gorm.db")
+	gorm, errXorm := GenGorm(tablePrefix, "sqlite", "gorm.db", true)
 	if errXorm != nil {
 		panic(errXorm)
 	}
@@ -50,11 +50,12 @@ func Example() {
 	_ = db
 }
 
-func GenGorm(tablePrefix, driveName, dataSourceName string) (db testfixtures.IOrm, err error) {
+func GenGorm(tablePrefix, driveName, dataSourceName string, isOpenDebug bool) (db testfixtures.IOrm, err error) {
 	gorm, err := testfixtures.NewGOrm(
 		testfixtures.GOrmOptionDialect(driveName),
 		testfixtures.GOrmOptionDataSourceName(dataSourceName),
 		testfixtures.GOrmOptionTablePrefix(tablePrefix),
+		testfixtures.GOrmOptionOpenDebug(isOpenDebug),
 	)
 	if err != nil {
 		return

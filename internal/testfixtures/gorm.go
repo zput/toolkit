@@ -28,7 +28,9 @@ func NewGOrm(o ...GOrmOption) (x *GOrm, err error) {
 	if err != nil {
 		return
 	}
-	x.db = x.db.Debug()
+	if x.isOpen {
+		x.db = x.db.Debug()
+	}
 	return
 }
 
@@ -36,6 +38,7 @@ type GOrm struct {
 	dialect, dataSourceName string
 	tablePrefix             string
 	db                      *gorm.DB
+	isOpen                  bool
 }
 
 func (x *GOrm) MigrationTableSchema(tables ...interface{}) (err error) {
@@ -81,6 +84,13 @@ func GOrmOptionDataSourceName(dataSourceName string) GOrmOption {
 func GOrmOptionTablePrefix(tablePrefix string) GOrmOption {
 	return func(x *GOrm) (err error) {
 		x.tablePrefix = tablePrefix
+		return
+	}
+}
+
+func GOrmOptionOpenDebug(isOpen bool) GOrmOption {
+	return func(x *GOrm) (err error) {
+		x.isOpen = isOpen
 		return
 	}
 }
