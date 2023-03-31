@@ -3,6 +3,9 @@ package orm
 // 更新的时候
 
 /*
+
+必须要有
+
 xxxUpdateAll 更新req struct中对应的所有字段（包括零语义）
 	eg:StateMachineUpdateAll  req struct.SM所有字段需要更新
 
