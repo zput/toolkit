@@ -6,16 +6,6 @@ import (
 	"unicode"
 )
 
-// - Struct转Map，通过tags，可以使用自定义的tags
-
-// go get -u github.com/wolfogre/gtag/cmd/gtag
-
-type User struct {
-	Id    int    `bson:"_id"`
-	Name  string `bson:"name"`
-	Email string `bson:"email"`
-}
-
 func Transfer(tag string, object interface{}) map[string]interface{} {
 	return transfer(tag, object, ConvByGetFirstValue, ConvByCamel2Case)
 }
@@ -29,17 +19,17 @@ func transfer(tag string, Struct interface{}, converts ...ConvertFunc) map[strin
 	var ret = make(map[string]interface{})
 	typeOfStruct := reflect.TypeOf(Struct)
 	valueOfStruct := reflect.ValueOf(Struct)
-	for i := typeOfStruct.NumField(); i >= 0; i-- {
+	for i := typeOfStruct.NumField() - 1; i >= 0; i-- {
 		fieldOfStruct := typeOfStruct.Field(i)
 		if !fieldOfStruct.IsExported() {
 			continue
 		}
 		var _tag = fieldOfStruct.Tag.Get(tag)
-		for _, f := range converts {
-			_tag = f(_tag)
-		}
 		if len(_tag) == 0 {
 			_tag = fieldOfStruct.Name
+		}
+		for _, f := range converts {
+			_tag = f(_tag)
 		}
 		ret[_tag] = valueOfStruct.Field(i).Interface()
 	}
