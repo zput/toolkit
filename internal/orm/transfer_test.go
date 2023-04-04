@@ -15,6 +15,12 @@ type User struct {
 	Email string `bson:"email"`
 }
 
+type User2 struct {
+	id       int    `bson:"_id" orm:"id"`
+	NameByXX string `bson:"name" orm:"name_by_xx"`
+	EmailID  string `bson:"email"`
+}
+
 func TestTransfer(t *testing.T) {
 	type args struct {
 		tag    string
@@ -57,10 +63,25 @@ func TestTransfer(t *testing.T) {
 				"name":  "ZZ",
 			},
 		},
+		{
+			name: "orm tags parse",
+			args: args{
+				tag: "orm",
+				object: User2{
+					id:       1,
+					NameByXX: "xx",
+					EmailID:  "ZZ",
+				},
+			},
+			want: map[string]interface{}{
+				"name_by_xx": "xx",
+				"email_i_d":  "ZZ",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Transfer(tt.args.tag, tt.args.object); !reflect.DeepEqual(got, tt.want) {
+			if got := TransferByDefaultConv(tt.args.tag, tt.args.object); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Transfer() = %v, want %v", got, tt.want)
 			}
 		})
