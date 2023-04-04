@@ -21,6 +21,11 @@ type User2 struct {
 	EmailId  string `bson:"email"`
 }
 
+type User3 struct {
+	User2
+	RequestId string `bson:"email"`
+}
+
 func TestTransfer(t *testing.T) {
 	type args struct {
 		tag    string
@@ -36,6 +41,22 @@ func TestTransfer(t *testing.T) {
 			args: args{
 				tag: "bson",
 				object: User{
+					Id:    1,
+					Email: "xx",
+					Name:  "ZZ",
+				},
+			},
+			want: map[string]interface{}{
+				"_id":   1,
+				"email": "xx",
+				"name":  "ZZ",
+			},
+		},
+		{
+			name: "tags parse",
+			args: args{
+				tag: "bson",
+				object: &User{
 					Id:    1,
 					Email: "xx",
 					Name:  "ZZ",
@@ -76,6 +97,25 @@ func TestTransfer(t *testing.T) {
 			want: map[string]interface{}{
 				"name_by_xx": "xx",
 				"email_id":   "ZZ",
+			},
+		},
+		{
+			name: "orm tags parse",
+			args: args{
+				tag: "orm",
+				object: User3{
+					User2: User2{
+						id:       1,
+						NameByXX: "xx",
+						EmailId:  "ZZ",
+					},
+					RequestId: "1111",
+				},
+			},
+			want: map[string]interface{}{
+				"name_by_xx": "xx",
+				"email_id":   "ZZ",
+				"request_id": "1111",
 			},
 		},
 	}

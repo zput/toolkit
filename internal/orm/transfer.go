@@ -12,7 +12,7 @@ func TransferByDefaultConvAndTags(object interface{}) map[string]interface{} {
 
 // TransferByDefaultConv default sets convert functions including ConvByGetFirstValue etc.
 func TransferByDefaultConv(tag string, object interface{}) map[string]interface{} {
-	return Transfer(tag, object, ConvByGetFirstValue)
+	return NewTransfer(tag, ConvByGetFirstValue).transfer(object)
 }
 
 type ConvertFunc = func(string) string
@@ -20,25 +20,53 @@ type ConvertFunc = func(string) string
 var ConvByGetFirstValue = func(in string) string { return strings.TrimSpace(strings.Split(in, ",")[0]) }
 var ConvByCamel2Case = camel2Case
 
-func Transfer(tag string, Struct interface{}, converts ...ConvertFunc) map[string]interface{} {
+func NewTransfer(tag string, converts ...ConvertFunc) *Transfer {
+	return &Transfer{
+		tag:      tag,
+		converts: converts,
+	}
+}
+
+type Transfer struct {
+	tag      string
+	converts []ConvertFunc
+}
+
+func (tran *Transfer) transfer(Struct interface{}) map[string]interface{} {
 	var ret = make(map[string]interface{})
-	typeOfStruct := reflect.TypeOf(Struct)
-	valueOfStruct := reflect.ValueOf(Struct)
-	for i := typeOfStruct.NumField() - 1; i >= 0; i-- {
-		fieldOfStruct := typeOfStruct.Field(i)
-		if !fieldOfStruct.IsExported() {
+	t := reflect.TypeOf(Struct)
+	v := reflect.ValueOf(Struct)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+		v = v.Elem()
+	}
+	if t.Kind() != reflect.Struct {
+		return ret
+	}
+	tran.parse(ret, t, v)
+	return ret
+}
+
+func (tran *Transfer) parse(storage map[string]interface{}, t reflect.Type, v reflect.Value) {
+	for i := t.NumField() - 1; i >= 0; i-- {
+		tt := t.Field(i)
+		vv := v.Field(i)
+		if !tt.IsExported() {
 			continue
 		}
-		var _tag = fieldOfStruct.Tag.Get(tag)
-		if len(_tag) == 0 {
-			_tag = ConvByCamel2Case(fieldOfStruct.Name)
+		if tt.Anonymous {
+			tran.parse(storage, tt.Type, vv)
+			continue
 		}
-		for _, f := range converts {
+		var _tag = tt.Tag.Get(tran.tag)
+		if len(_tag) == 0 {
+			_tag = ConvByCamel2Case(tt.Name)
+		}
+		for _, f := range tran.converts {
 			_tag = f(_tag)
 		}
-		ret[_tag] = valueOfStruct.Field(i).Interface()
+		storage[_tag] = vv.Interface()
 	}
-	return ret
 }
 
 func camel2Case(name string) string {

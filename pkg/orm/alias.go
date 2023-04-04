@@ -20,5 +20,5 @@ zzzUpdate[other word] 只更新req struct中非零语义
 
 var (
 	TransferByDefaultConv = orm.TransferByDefaultConv
-	ToMap                 = orm.TransferByDefaultConvAndTags
+	FromStructToMap       = orm.TransferByDefaultConvAndTags
 )
