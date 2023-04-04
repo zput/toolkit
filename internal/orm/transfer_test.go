@@ -18,7 +18,7 @@ type User struct {
 type User2 struct {
 	id       int    `bson:"_id" orm:"id"`
 	NameByXX string `bson:"name" orm:"name_by_xx"`
-	EmailID  string `bson:"email"`
+	EmailId  string `bson:"email"`
 }
 
 func TestTransfer(t *testing.T) {
@@ -70,12 +70,12 @@ func TestTransfer(t *testing.T) {
 				object: User2{
 					id:       1,
 					NameByXX: "xx",
-					EmailID:  "ZZ",
+					EmailId:  "ZZ",
 				},
 			},
 			want: map[string]interface{}{
 				"name_by_xx": "xx",
-				"email_i_d":  "ZZ",
+				"email_id":   "ZZ",
 			},
 		},
 	}
