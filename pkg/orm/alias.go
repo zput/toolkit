@@ -1,5 +1,7 @@
 package orm
 
+import "github.com/zput/toolkit/internal/orm"
+
 // 更新的时候
 
 /*
@@ -15,3 +17,8 @@ zzzUpdate[other word] 只更新req struct中非零语义
 
 既有零语义又有非零语义，增加额外的标识来确定
 */
+
+var (
+	TransferByDefaultConv = orm.TransferByDefaultConv
+	ToMap                 = orm.TransferByDefaultConvAndTags
+)

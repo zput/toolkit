@@ -6,7 +6,11 @@ import (
 	"unicode"
 )
 
-// TransferByDefaultConv default sets convert functions including ConvByGetFirstValue, ConvByCamel2Case etc.
+func TransferByDefaultConvAndTags(object interface{}) map[string]interface{} {
+	return TransferByDefaultConv("orm", object)
+}
+
+// TransferByDefaultConv default sets convert functions including ConvByGetFirstValue etc.
 func TransferByDefaultConv(tag string, object interface{}) map[string]interface{} {
 	return Transfer(tag, object, ConvByGetFirstValue)
 }
