@@ -6,8 +6,9 @@ import (
 	"unicode"
 )
 
-func Transfer(tag string, object interface{}) map[string]interface{} {
-	return transfer(tag, object, ConvByGetFirstValue, ConvByCamel2Case)
+// TransferByDefaultConv default sets convert functions including ConvByGetFirstValue, ConvByCamel2Case etc.
+func TransferByDefaultConv(tag string, object interface{}) map[string]interface{} {
+	return Transfer(tag, object, ConvByGetFirstValue)
 }
 
 type ConvertFunc = func(string) string
@@ -15,7 +16,7 @@ type ConvertFunc = func(string) string
 var ConvByGetFirstValue = func(in string) string { return strings.TrimSpace(strings.Split(in, ",")[0]) }
 var ConvByCamel2Case = camel2Case
 
-func transfer(tag string, Struct interface{}, converts ...ConvertFunc) map[string]interface{} {
+func Transfer(tag string, Struct interface{}, converts ...ConvertFunc) map[string]interface{} {
 	var ret = make(map[string]interface{})
 	typeOfStruct := reflect.TypeOf(Struct)
 	valueOfStruct := reflect.ValueOf(Struct)
@@ -26,7 +27,7 @@ func transfer(tag string, Struct interface{}, converts ...ConvertFunc) map[strin
 		}
 		var _tag = fieldOfStruct.Tag.Get(tag)
 		if len(_tag) == 0 {
-			_tag = fieldOfStruct.Name
+			_tag = ConvByCamel2Case(fieldOfStruct.Name)
 		}
 		for _, f := range converts {
 			_tag = f(_tag)
