@@ -35,7 +35,7 @@ func NewGOrm(o ...GOrmOption) (x *GOrm, err error) {
 }
 
 type GOrm struct {
-	dialect, dataSourceName string
+	dialect, dataSourceName string // dialect: sqlite3, mysql, postgres, sqlserver; dataSourceName: sqlite3: file::memory:?cache=shared
 	tablePrefix             string
 	db                      *gorm.DB
 	isOpen                  bool

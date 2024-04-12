@@ -1,6 +1,6 @@
 module github.com/zput/toolkit
 
-go 1.15
+go 1.17
 
 require (
 	github.com/glebarez/sqlite v1.7.0
