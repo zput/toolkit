@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	Assert = assert.Assert
+	Equal = assert.Equal
 )
