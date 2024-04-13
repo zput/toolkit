@@ -23,7 +23,11 @@ func equal(cur, exp interface{}) bool {
 		v1 = v1.Elem()
 		v2 = v2.Elem()
 	}
+	if !v1.IsValid() || !v2.IsValid() {
+		return v1.IsValid() == v2.IsValid()
+	}
 
+	t2 := v2.Type()
 	// 提前判断自定义类型
 	if isSelfType(v1.Type()) {
 		return compareSelfType(v1.Type().Name(), v1, v2)
@@ -32,7 +36,7 @@ func equal(cur, exp interface{}) bool {
 	switch v2.Kind() {
 	case reflect.Slice:
 		if v1.Len() != v2.Len() {
-			fmt.Println("断言失败，字段长度不一致", v1.Len(), v2.Len())
+			fmt.Printf("Assert failure[%s],字段长度不一致,expect:%d, acture:%d\n", t2.String(), v2.Len(), v1.Len())
 			return false
 		}
 		for j := 0; j < v2.Len(); j++ {
@@ -55,7 +59,8 @@ func Struct(cur, exp interface{}) bool {
 		return false
 	}
 
-	fmt.Printf("compare [%s] type, num field：%d\n", v2.Type().String(), v2.Type().NumField())
+	t2 := v2.Type()
+	fmt.Printf("compare [%s] type, num field：%d\n", t2.String(), t2.NumField())
 
 	for i := 0; i < v2.NumField(); i++ {
 		fieldName := v2.Type().Field(i).Name
@@ -71,6 +76,7 @@ func Struct(cur, exp interface{}) bool {
 		}
 		// 3.获取v2字段名
 		if !equal(vByV1I.Interface(), theVal.Interface()) {
+			fmt.Printf("Assert failure[%s.%s],expect:%v, acture:%v \n", t2.String(), fieldName, theVal.Interface(), vByV1I.Interface())
 			return false
 		}
 	}

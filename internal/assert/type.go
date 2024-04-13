@@ -79,7 +79,7 @@ func compareSelfType(field string, data1, data2 reflect.Value) (ret bool) {
 		ret = reflect.DeepEqual(value1, value2)
 	}
 	if !ret {
-		fmt.Printf("断言失败，字段：%s, 实际：%v，期望：%v", field, data1, data2)
+		fmt.Printf("Assert failure[%s], expect：%v, acture:%v\n", field, data2, data1)
 	}
 	return
 }
