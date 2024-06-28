@@ -6,6 +6,10 @@ import (
 )
 
 func Equal(cur, exp interface{}) bool {
+	if (cur == nil && exp != nil) || (cur != nil && exp == nil) {
+		return false
+	}
+
 	var isEqual = reflect.DeepEqual(cur, exp)
 	if isEqual {
 		return true
