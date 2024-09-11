@@ -3,7 +3,11 @@ package testfixtures
 import (
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"log"
+	"os"
+	"time"
 )
 
 func NewGOrm(o ...GOrmOption) (x *GOrm, err error) {
@@ -22,7 +26,15 @@ func NewGOrm(o ...GOrmOption) (x *GOrm, err error) {
 		TablePrefix:   x.tablePrefix,
 		SingularTable: true,
 	}
-
+	if x.isOpen {
+		// 创建 GORM logger
+		newLogger := logger.New(log.New(os.Stdout, "\n", log.LstdFlags), logger.Config{
+			SlowThreshold: time.Second, // 慢 SQL 阈值
+			LogLevel:      logger.Info, // 日志级别
+			Colorful:      true,        // 是否使用颜色
+		})
+		gormConfig.Logger = newLogger // 使用自定义的 logger
+	}
 	// gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	x.db, err = gorm.Open(sqlite.Open(x.dataSourceName), gormConfig)
 	if err != nil {

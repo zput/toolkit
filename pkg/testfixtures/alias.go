@@ -50,39 +50,7 @@ func Example() {
 	_ = db
 }
 
-func GenGorm(tablePrefix, driveName, dataSourceName string, isOpenDebug bool) (db testfixtures.IOrm, err error) {
-	gorm, err := testfixtures.NewGOrm(
-		testfixtures.GOrmOptionDialect(driveName),
-		testfixtures.GOrmOptionDataSourceName(dataSourceName),
-		testfixtures.GOrmOptionTablePrefix(tablePrefix),
-		testfixtures.GOrmOptionOpenDebug(isOpenDebug),
-	)
-	if err != nil {
-		return
-	}
-	return gorm, nil
-}
-
-func SetUpFixture(mockDataPath string, orm testfixtures.IOrm, tables ...interface{}) (db testfixtures.DB, err error) {
-	var f testfixtures.IFixture
-	f, err = testfixtures.NewFixture(
-		testfixtures.FixtureOptionOrm(orm),
-		testfixtures.FixtureOptionMockDataPath(mockDataPath),
-	)
-	if err != nil {
-		return
-	}
-
-	if err = f.MigrationTableSchema(
-		tables...,
-	); err != nil {
-		return
-	}
-
-	if err = f.LoadMockData(); err != nil {
-		return
-	}
-
-	db = f.RetDb()
-	return
-}
+var (
+	GenGorm      = testfixtures.GenGorm
+	SetUpFixture = testfixtures.SetUpFixture
+)
