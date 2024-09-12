@@ -1,4 +1,4 @@
-package testfixtures
+package common
 
 import (
 	"database/sql"
@@ -12,6 +12,14 @@ const (
 	GORM OrmType = iota
 	XORM
 )
+
+func NewDB(gormDB *gorm.DB, xormDB *xorm.Engine, ormType OrmType) DB {
+	return DB{
+		gOrmDB: gormDB,
+		xOrmDB: xormDB,
+		__type: ormType,
+	}
+}
 
 type DB struct {
 	gOrmDB *gorm.DB

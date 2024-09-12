@@ -1,7 +1,8 @@
-package testfixtures
+package gorm_sqllite
 
 import (
 	"github.com/glebarez/sqlite"
+	. "github.com/zput/toolkit/internal/testfixtures/common"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
@@ -65,11 +66,9 @@ func (x *GOrm) MigrationTableSchema(tables ...interface{}) (err error) {
 }
 
 func (x *GOrm) RetDb() DB {
-	return DB{
-		gOrmDB: x.db,
-		__type: GORM,
-	}
+	return NewDB(x.db, nil, GORM)
 }
+
 func (x *GOrm) Name() OrmType {
 	return GORM
 }

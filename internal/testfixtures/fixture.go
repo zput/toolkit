@@ -3,6 +3,7 @@ package testfixtures
 import (
 	"fmt"
 	"github.com/go-testfixtures/testfixtures/v3"
+	. "github.com/zput/toolkit/internal/testfixtures/common"
 	"io/ioutil"
 )
 

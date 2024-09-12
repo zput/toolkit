@@ -2,6 +2,8 @@ package assert
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
+	"github.com/zput/toolkit/internal/utils"
 	"reflect"
 )
 
@@ -96,4 +98,23 @@ func getTheRealVal(val reflect.Value) (isZero bool, ret reflect.Value) {
 		ret = val
 	}
 	return
+}
+
+type AssertExecF = func() error
+
+func AssertValueEqual(expected, actual interface{}, msg ...string) AssertExecF {
+	return func() error {
+		if !assert.ObjectsAreEqualValues(expected, actual) {
+			return fmt.Errorf("%v expect:%v; actual:%v", msg, expected, utils.ToString(actual))
+		}
+		return nil
+	}
+}
+func AssertExec(fs []AssertExecF) error {
+	for _, f := range fs {
+		if err := f(); err != nil {
+			return err
+		}
+	}
+	return nil
 }

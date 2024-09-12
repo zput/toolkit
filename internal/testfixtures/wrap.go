@@ -1,5 +1,10 @@
 package testfixtures
 
+import (
+	. "github.com/zput/toolkit/internal/testfixtures/common"
+	. "github.com/zput/toolkit/internal/testfixtures/gorm_sqllite"
+)
+
 func GenGorm(tablePrefix, driveName, dataSourceName string, isOpenDebug bool) (db IOrm, err error) {
 	gorm, err := NewGOrm(
 		GOrmOptionDialect(driveName),

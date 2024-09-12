@@ -1,6 +1,7 @@
-package testfixtures
+package xorm_sqllite
 
 import (
+	. "github.com/zput/toolkit/internal/testfixtures/common"
 	"xorm.io/xorm"
 	xlog "xorm.io/xorm/log"
 	"xorm.io/xorm/names"
@@ -52,10 +53,7 @@ func (x *XOrm) MigrationTableSchema(tables ...interface{}) (err error) {
 }
 
 func (x *XOrm) RetDb() DB {
-	return DB{
-		xOrmDB: x.engine,
-		__type: XORM,
-	}
+	return NewDB(nil, x.engine, XORM)
 }
 
 func (x *XOrm) Dialect() string {

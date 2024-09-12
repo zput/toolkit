@@ -3,7 +3,6 @@ package testfixtures_wrap_sqllite
 import (
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"github.com/zput/toolkit/internal/testfixtures"
 	"github.com/zput/toolkit/internal/utils"
 	"path/filepath"
@@ -39,7 +38,7 @@ type Mock struct {
 	flags Flags
 }
 
-func (m *Mock) BaseByCtx(ctx context.Context, ff ...ThirdInitF) context.Context {
+func (m *Mock) baseByCtx(ctx context.Context, ff ...ThirdInitF) context.Context {
 	var flags = m.flags
 
 	if len(flags.MockDataSubPath) != 0 && len(flags.SelfDefineDBName) == 0 {
@@ -50,44 +49,33 @@ func (m *Mock) BaseByCtx(ctx context.Context, ff ...ThirdInitF) context.Context 
 		ctx = f(ctx)
 	}
 
-	//// 公司ID
-	//ctx = eorm.SetCtxCompanyId(ctx, companyId)
-	//// 操作人
-	//ctx = util_ctx.SetCtxOperator(ctx, &register.Operator{Id: 0, Name: "System", Type: "SYSTEM"})
-	//// 分组信息
-	//ctx = util_ctx.SetCtxGroupIds(ctx, "-1")
-	//// DB
-	//MockDB()
-	//// 协程
-	//MockGoroutine(flags.UseGoroutine)
-	//// 是否打开db log
-	//mockNetEnv(flags)
-
-	// 同步表结构
-	ctx = m.injectDB(ctx)
-
 	return ctx
 }
 
-func (m *Mock) injectDB(ctx context.Context) context.Context {
-	var flags = m.flags
-	if len(flags.MockDataSubPath) != 0 && len(flags.SelfDefineDBName) == 0 {
-		flags.SelfDefineDBName = flags.MockDataSubPath
-	}
-	orm, errG := testfixtures.GenGorm("", "sqlite", m.mockI.RetDbPath(flags), flags.IsOpenDbLog)
-	if errG != nil {
-		panic(errG)
+// InjectDB 同步表结构
+func (m *Mock) InjectDB(ctx context.Context, tablePrefix, driveName, dataSourceName string) ThirdInitF {
+	return func(ctx context.Context) context.Context {
+		var flags = m.flags
+		if len(flags.MockDataSubPath) != 0 && len(flags.SelfDefineDBName) == 0 {
+			flags.SelfDefineDBName = flags.MockDataSubPath
+		}
+
+		orm, errG := testfixtures.GenGorm(tablePrefix, driveName, dataSourceName, flags.IsOpenDbLog)
+		if errG != nil {
+			panic(errG)
+		}
+
+		testFixturesDb, err := testfixtures.SetUpFixture(
+			filepath.Join(filepath.Dir(m.mockI.RetDbPath(flags)), flags.MockDataSubPath),
+			orm,
+			m.mockI.RetTables()...,
+		)
+		if err != nil {
+			panic(err.Error() + "\n" + fmt.Sprintln(utils.ToString(flags)) + "\n" + m.mockI.RetDbPath(flags))
+		}
+		return SetDbToCtxWrap(ctx, &WrapDb{testFixturesDb.Gorm().WithContext(ctx)})
 	}
 
-	testFixturesDb, err := testfixtures.SetUpFixture(
-		filepath.Join(filepath.Dir(m.mockI.RetDbPath(flags)), flags.MockDataSubPath),
-		orm,
-		m.mockI.RetTables()...,
-	)
-	if err != nil {
-		panic(err.Error() + "\n" + fmt.Sprintln(utils.ToString(flags)) + "\n" + m.mockI.RetDbPath(flags))
-	}
-	return SetDbToCtxWrap(ctx, &WrapDb{testFixturesDb.Gorm().WithContext(ctx)})
 }
 
 func howManySlash(target string) string {
@@ -102,23 +90,4 @@ func howManySlash(target string) string {
 		ret += "../"
 	}
 	return ret
-}
-
-type AssertExecF = func() error
-
-func AssertValueEqual(expected, actual interface{}, msg ...string) AssertExecF {
-	return func() error {
-		if !assert.ObjectsAreEqualValues(expected, actual) {
-			return fmt.Errorf("%v expect:%v; actual:%v", msg, expected, utils.ToString(actual))
-		}
-		return nil
-	}
-}
-func AssertExec(fs []AssertExecF) error {
-	for _, f := range fs {
-		if err := f(); err != nil {
-			return err
-		}
-	}
-	return nil
 }
