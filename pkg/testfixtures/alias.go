@@ -2,20 +2,22 @@ package testfixtures
 
 import (
 	"github.com/zput/toolkit/internal/testfixtures"
+	"github.com/zput/toolkit/internal/testfixtures/gorm_sqllite"
 	"github.com/zput/toolkit/internal/testfixtures/tool"
+	"github.com/zput/toolkit/internal/testfixtures/xorm_sqllite"
 )
 
 type (
 	Fixture = testfixtures.Fixture
-	GOrm    = testfixtures.GOrm
-	XOrm    = testfixtures.XOrm
+	GOrm    = gorm_sqllite.GOrm
+	XOrm    = xorm_sqllite.XOrm
 )
 
 var (
-	NewGOrm                  = testfixtures.NewGOrm
-	GOrmOptionDialect        = testfixtures.GOrmOptionDialect
-	GOrmOptionDataSourceName = testfixtures.GOrmOptionDataSourceName
-	GOrmOptionTablePrefix    = testfixtures.GOrmOptionTablePrefix
+	NewGOrm                  = gorm_sqllite.NewGOrm
+	GOrmOptionDialect        = gorm_sqllite.GOrmOptionDialect
+	GOrmOptionDataSourceName = gorm_sqllite.GOrmOptionDataSourceName
+	GOrmOptionTablePrefix    = gorm_sqllite.GOrmOptionTablePrefix
 
 	NewFixture                = testfixtures.NewFixture
 	FixtureOptionMockDataPath = testfixtures.FixtureOptionMockDataPath
