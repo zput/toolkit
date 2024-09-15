@@ -3,6 +3,7 @@ module github.com/zput/toolkit
 go 1.17
 
 require (
+	github.com/agiledragon/gomonkey/v2 v2.12.0
 	github.com/glebarez/sqlite v1.7.0
 	github.com/go-testfixtures/testfixtures/v3 v3.7.0
 	github.com/shopspring/decimal v1.3.1
