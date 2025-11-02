@@ -7,10 +7,11 @@ import (
 // type
 
 type (
-	ThirdInitF    = testfixtures_wrap_sqllite.ThirdInitF
-	Flags         = testfixtures_wrap_sqllite.Flags
-	MockInterface = testfixtures_wrap_sqllite.MockInterface
-	Mock          = testfixtures_wrap_sqllite.Mock
+	Append2Ctx        = testfixtures_wrap_sqllite.Append2Ctx
+	Flags             = testfixtures_wrap_sqllite.Config
+	CallerDbInterface = testfixtures_wrap_sqllite.CallerDbInterface
+	ConfigInitF       = testfixtures_wrap_sqllite.ConfigInitF
+	Mock              = testfixtures_wrap_sqllite.Mock
 
 	WrapGoMonkey = testfixtures_wrap_sqllite.WrapGoMonkey
 )
@@ -18,7 +19,10 @@ type (
 // variable
 
 var (
-	NewMock        = testfixtures_wrap_sqllite.NewMock
+	NewMock                     = testfixtures_wrap_sqllite.NewMock
+	ConfigInitCallerDbInterface = testfixtures_wrap_sqllite.ConfigInitCallerDbInterface
+	ConfigInitIsOpenDbLog       = testfixtures_wrap_sqllite.ConfigInitIsOpenDbLog
+
 	GetDbFromCtx   = testfixtures_wrap_sqllite.GetDbFromCtx
 	SetDbToCtxWrap = testfixtures_wrap_sqllite.SetDbToCtxWrap
 

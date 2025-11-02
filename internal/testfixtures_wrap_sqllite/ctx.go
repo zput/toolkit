@@ -6,17 +6,31 @@ import (
 	"gorm.io/gorm"
 )
 
+type Append2Ctx = func(ctx context.Context) context.Context
+
+func Append2CtxWrap(ctx context.Context, ff ...Append2Ctx) context.Context {
+	for _, f := range ff {
+		ctx = f(ctx)
+	}
+	return ctx
+}
+
+// -----------------------------------------------------------------------------------
+
+type dbKey struct{}
+
 type WrapDb struct {
 	*gorm.DB
 }
 
-func SetDbToCtx(ctx context.Context) context.Context {
-	ctx = context.WithValue(ctx, dbKey{}, &WrapDb{})
-	return ctx
+func (w *WrapDb) SetDbToCtxWrap() Append2Ctx {
+	return func(ctx context.Context) context.Context {
+		ctx = context.WithValue(ctx, dbKey{}, w)
+		return ctx
+	}
 }
-
-func SetDbToCtxWrap(ctx context.Context, dbPtr *WrapDb) context.Context {
-	ctx = context.WithValue(ctx, dbKey{}, dbPtr)
+func SetDbToCtxWrap(ctx context.Context, w *WrapDb) context.Context {
+	ctx = context.WithValue(ctx, dbKey{}, w)
 	return ctx
 }
 
@@ -25,21 +39,27 @@ func GetDbFromCtx(ctx context.Context) *WrapDb {
 	return wdb
 }
 
-type dbKey struct{}
+func InitDbToCtx(ctx context.Context) context.Context {
+	ctx = context.WithValue(ctx, dbKey{}, &WrapDb{})
+	return ctx
+}
 
-// ---
+// ----------------------------------------------------
+
+type goMonkeyKey struct{}
 
 type WrapGoMonkey struct {
 	*gomonkey.Patches
 }
 
-func SetGoMonkeyKeyToCtx(ctx context.Context) context.Context {
-	ctx = context.WithValue(ctx, goMonkeyKey{}, &WrapGoMonkey{})
-	return ctx
+func (w *WrapGoMonkey) SetGoMonkeyKeyToCtxWrap() Append2Ctx {
+	return func(ctx context.Context) context.Context {
+		ctx = context.WithValue(ctx, goMonkeyKey{}, w)
+		return ctx
+	}
 }
-
-func SetGoMonkeyKeyToCtxWrap(ctx context.Context, dbPtr *WrapGoMonkey) context.Context {
-	ctx = context.WithValue(ctx, goMonkeyKey{}, dbPtr)
+func SetGoMonkeyKeyToCtxWrap(ctx context.Context, w *WrapGoMonkey) context.Context {
+	ctx = context.WithValue(ctx, goMonkeyKey{}, w)
 	return ctx
 }
 
@@ -48,4 +68,9 @@ func GetGoMonkeyKeyFromCtx(ctx context.Context) *WrapGoMonkey {
 	return wdb
 }
 
-type goMonkeyKey struct{}
+func InitGoMonkeyKeyToCtx(ctx context.Context) context.Context {
+	ctx = context.WithValue(ctx, goMonkeyKey{}, &WrapGoMonkey{})
+	return ctx
+}
+
+// ----------------------------------------------------
