@@ -5,16 +5,13 @@ import (
 	"github.com/zput/toolkit/internal/testfixtures"
 	"github.com/zput/toolkit/internal/utils"
 	"gorm.io/gorm"
-	"path/filepath"
 )
 
 type Config struct {
 	CallerDbInterface
 	IsOpenDbLog bool // 默认不打开db日志
 
-	// UseGoroutine     int    // 默认不使用协程, 直接串行执行
-	MockDataSubPath  string // Mock数据库数据的yaml文件目录
-	SelfDefineDBName string // DB名,主要用于sqlLite生成本地数据库时的名字(主要是防止并发导致sqlLite死锁)。当MockDataSubPath不为空，但是SelfDefineDBName为空，此时SelfDefineDBName被赋MockDataSubPath值
+	SelfDefineDBName string // DB名,主要用于sqlLite生成本地数据库时的名字(主要是防止并发导致sqlLite死锁)
 }
 
 func (c Config) String() string {
@@ -24,6 +21,7 @@ func (c Config) String() string {
 type CallerDbInterface interface {
 	DefineDbTableModels() (tableModels []interface{})
 	DefineDbLocationByWillGen() (dbLocation string)
+	DefineMappingLocationByWillAutoInit2Db() (dbLocation string)
 }
 
 type ConfigInitF = func(*Config)
@@ -67,7 +65,7 @@ func (m *Mock) fixtureByGorm(tablePrefix, driveName, dataSourceName string) *gor
 	}
 	// 2. fixture orm
 	testFixturesDb, err := testfixtures.SetUpFixture(
-		filepath.Join(filepath.Dir(m.DefineDbLocationByWillGen()), m.MockDataSubPath),
+		m.DefineMappingLocationByWillAutoInit2Db(),
 		orm,
 		m.DefineDbTableModels()...,
 	)

@@ -39,10 +39,10 @@ func GetDbFromCtx(ctx context.Context) *WrapDb {
 	return wdb
 }
 
-func InitDbToCtx(ctx context.Context) context.Context {
-	ctx = context.WithValue(ctx, dbKey{}, &WrapDb{})
-	return ctx
-}
+//func InitDbToCtx(ctx context.Context) context.Context {
+//	ctx = context.WithValue(ctx, dbKey{}, &WrapDb{})
+//	return ctx
+//}
 
 // ----------------------------------------------------
 
@@ -58,6 +58,12 @@ func (w *WrapGoMonkey) SetGoMonkeyKeyToCtxWrap() Append2Ctx {
 		return ctx
 	}
 }
+
+func SetGoMonkeyKeyToCtx(ctx context.Context) context.Context {
+	ctx = context.WithValue(ctx, goMonkeyKey{}, &WrapGoMonkey{})
+	return ctx
+}
+
 func SetGoMonkeyKeyToCtxWrap(ctx context.Context, w *WrapGoMonkey) context.Context {
 	ctx = context.WithValue(ctx, goMonkeyKey{}, w)
 	return ctx
@@ -68,9 +74,9 @@ func GetGoMonkeyKeyFromCtx(ctx context.Context) *WrapGoMonkey {
 	return wdb
 }
 
-func InitGoMonkeyKeyToCtx(ctx context.Context) context.Context {
-	ctx = context.WithValue(ctx, goMonkeyKey{}, &WrapGoMonkey{})
-	return ctx
-}
+//func InitGoMonkeyKeyToCtx(ctx context.Context) context.Context {
+//	ctx = context.WithValue(ctx, goMonkeyKey{}, &WrapGoMonkey{})
+//	return ctx
+//}
 
 // ----------------------------------------------------
